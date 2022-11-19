@@ -1,0 +1,11 @@
+.monthly {
+  width: 1000px;
+}
+
+.category {
+  width: 300px;
+}
+
+.row {
+  display: flex;
+}
