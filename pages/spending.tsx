@@ -52,8 +52,6 @@ export const getServerSideProps = async () => {
     categorySpending[transaction.category[0]] += transaction.amount;
   }
 
-  console.log(categorySpending);
-
   return { props: { monthlySpending, categorySpending } };
 };
 

@@ -1,29 +1,28 @@
 import { usePlaidLink, PlaidLinkOptions } from 'react-plaid-link';
 import axios from 'axios';
+import { InferGetServerSidePropsType } from 'next';
 
-import { useEffect, useState } from 'react';
+export const getServerSideProps = async () => {
+  const res = await axios.get(`${process.env.SERVER_URL}/link-token`);
+  const link_token: string = res.data.link_token;
 
-export default function Home() {
-  const [linkToken, setLinkToken] = useState('');
+  return { props: { link_token } };
+};
+
+export default function Home({
+  link_token,
+}: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const config: PlaidLinkOptions = {
-    token: linkToken,
+    token: link_token,
     onSuccess: (public_token) => {
-      console.log(public_token);
+      axios.post('/api/link-token', { public_token });
     },
   };
   const { open, ready } = usePlaidLink(config);
 
-  useEffect(() => {
-    const fetchLinkToken = async () => {
-      const res = await axios.post('/api/create_link_token');
-      setLinkToken(res.data.link_token);
-    };
-    fetchLinkToken();
-  }, []);
-
   return (
     <div>
-      <h1>{linkToken}</h1>
+      <h1>{link_token}</h1>
       <button disabled={!ready} onClick={() => open()}>
         Launch
       </button>
