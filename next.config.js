@@ -1,8 +1,6 @@
 /** @type {import('next').NextConfig} */
 require('dotenv-defaults/config');
 
-const dest = process.env.SERVER_URL || 'http://localhost:8080';
-
 const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
@@ -10,7 +8,7 @@ const nextConfig = {
     return [
       {
         source: '/api/:path*',
-        destination: 'http://localhost:8080/:path*',
+        destination: `${process.env.SERVER_URL}/:path*`,
       },
     ];
   },

@@ -9,8 +9,9 @@ import {
   Tooltip,
   Legend,
   ArcElement,
+  BarElement,
 } from 'chart.js';
-import { Line, Pie } from 'react-chartjs-2';
+import { Pie, Bar } from 'react-chartjs-2';
 import styles from '../styles/Spending.module.css';
 import axios from 'axios';
 import { InferGetServerSidePropsType } from 'next';
@@ -23,7 +24,8 @@ ChartJS.register(
   Title,
   Tooltip,
   Legend,
-  ArcElement
+  ArcElement,
+  BarElement
 );
 
 type CategorySpending = {
@@ -39,7 +41,9 @@ const dynamicColors = () => {
 
 export const getServerSideProps = async () => {
   // Fetch data from external API
-  const res = await axios.get('http://localhost:3000/api/transactions');
+  const res = await axios.get(
+    `http://localhost:8080/transaction/${process.env.USER_ID}`
+  );
   const data = res.data;
 
   const monthlySpending: number[] = new Array(12).fill(0);
@@ -64,7 +68,7 @@ export default function Page({
       <h1>Spending</h1>
       <div className={styles.row}>
         <div className={styles.monthly}>
-          <Line
+          <Bar
             options={{
               responsive: true,
             }}
@@ -87,9 +91,12 @@ export default function Page({
               datasets: [
                 {
                   label: 'Monthly Spending',
-                  data: monthlySpending,
+                  data: monthlySpending.map((x) => Math.abs(x)),
                   borderColor: 'rgb(255, 99, 132)',
-                  backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                  backgroundColor: monthlySpending.map((x) => {
+                    if (x > 0) return 'rgba(255, 99, 132, 0.5)';
+                    else return 'rgba(99, 255, 132, 0.5)';
+                  }),
                 },
               ],
             }}
